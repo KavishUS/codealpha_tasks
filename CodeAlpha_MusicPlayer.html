@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Music Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #222;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .player {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        button {
+            margin: 5px;
+            padding: 8px 12px;
+            border: none;
+            background: #ff4757;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ff6b81;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .song-info {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="player">
+    <div class="song-info">
+        <h3 id="title">Song Title</h3>
+        <p id="artist">Artist</p>
+    </div>
+
+    <audio id="audio"></audio>
+
+    <input type="range" id="progress" value="0">
+
+    <div>
+        <button onclick="prevSong()">Prev</button>
+        <button onclick="playPause()">Play</button>
+        <button onclick="nextSong()">Next</button>
+    </div>
+
+    <p>Volume</p>
+    <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+</div>
+
+<script>
+    const songs = [
+        {
+            title: "Song 1",
+            artist: "Artist 1",
+            src: "song1.mp3"
+        },
+        {
+            title: "Song 2",
+            artist: "Artist 2",
+            src: "song2.mp3"
+        }
+    ];
+
+    let currentSong = 0;
+    const audio = document.getElementById("audio");
+    const title = document.getElementById("title");
+    const artist = document.getElementById("artist");
+    const progress = document.getElementById("progress");
+    const volume = document.getElementById("volume");
+
+    function loadSong(index) {
+        title.textContent = songs[index].title;
+        artist.textContent = songs[index].artist;
+        audio.src = songs[index].src;
+    }
+
+    function playPause() {
+        if (audio.paused) {
+            audio.play();
+        } else {
+            audio.pause();
+        }
+    }
+
+    function nextSong() {
+        currentSong = (currentSong + 1) % songs.length;
+        loadSong(currentSong);
+        audio.play();
+    }
+
+    function prevSong() {
+        currentSong = (currentSong - 1 + songs.length) % songs.length;
+        loadSong(currentSong);
+        audio.play();
+    }
+
+    // Update progress bar
+    audio.addEventListener("timeupdate", () => {
+        progress.value = (audio.currentTime / audio.duration) * 100;
+    });
+
+    // Seek song
+    progress.addEventListener("input", () => {
+        audio.currentTime = (progress.value / 100) * audio.duration;
+    });
+
+    // Volume control
+    volume.addEventListener("input", () => {
+        audio.volume = volume.value;
+    });
+
+    // Autoplay next song
+    audio.addEventListener("ended", nextSong);
+
+    loadSong(currentSong);
+</script>
+
+</body>
+</html>
